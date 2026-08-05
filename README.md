@@ -40,9 +40,3 @@
   <picture><source media="(prefers-color-scheme: light)" srcset="https://www.gitskins.com/api/section/system-scan?username=ro161012&theme=aurora&mode=light" /><img src="https://www.gitskins.com/api/section/system-scan?username=ro161012&theme=aurora" width="100%" alt="ASCII profile scan" /></picture>
 </p>
 
-<hr />
-
-<p align="center">
-  <sub>ro161012 · every panel is a single <code>&lt;img&gt;</code> of live GitHub data ·
-  built with <a href="https://www.gitskins.com/readme-generator">GitSkins</a></sub>
-</p>
