@@ -118,10 +118,31 @@ def main() -> None:
     token = os.environ["GITHUB_TOKEN"]
     login = os.environ.get("PROFILE_LOGIN", "ro161012")
     total, weeks = fetch_calendar(login, token)
-    assets = Path(__file__).resolve().parents[1] / "assets"
+    root = Path(__file__).resolve().parents[1]
+    assets = root / "assets"
     assets.joinpath("profile-heatmap-dark.svg").write_text(render_svg(login, total, weeks, False))
     assets.joinpath("profile-heatmap-light.svg").write_text(render_svg(login, total, weeks, True))
-    print(f"Rendered {total} contributions across {len(weeks)} weeks.")
+
+    # GitHub's raw-image CDN can retain a branch URL briefly. A version query
+    # changes only when calendar data changes, so the profile refreshes without
+    # creating a commit loop on every scheduled workflow run.
+    active_dates = [str(day["date"]) for week in weeks for day in week["contributionDays"]
+                    if int(day["contributionCount"]) > 0]
+    version = f"{total}-{active_dates[-1] if active_dates else 'none'}"
+    readme = root / "README.md"
+    content = readme.read_text()
+    content = __import__("re").sub(
+        r"assets/profile-heatmap-light\.svg(?:\?v=[^\"]+)?",
+        f"assets/profile-heatmap-light.svg?v={version}",
+        content,
+    )
+    content = __import__("re").sub(
+        r"assets/profile-heatmap-dark\.svg(?:\?v=[^\"]+)?",
+        f"assets/profile-heatmap-dark.svg?v={version}",
+        content,
+    )
+    readme.write_text(content)
+    print(f"Rendered {total} contributions across {len(weeks)} weeks (version {version}).")
 
 
 if __name__ == "__main__":
